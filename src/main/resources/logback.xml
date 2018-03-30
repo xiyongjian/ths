@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- for debug, using jvm option : -Dlogback.debug=true -->
+<configuration>
+	<property name="defaultPattern"
+		value="%d{yyyyMMdd HHmmss.SSS}|%thread|%-5level|%-15C{15}|%-10M#%-2L| %msg%n" />
+	<property name="log_dir" value="./logs" />
+
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern> ${defaultPattern} </pattern>
+		</encoder>
+	</appender>
+
+	<appender name="TIME_BASED_LOG"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${log_dir}/download.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${log_dir}/arc/download.%d{yyyyMMdd}.log
+			</fileNamePattern>
+			<maxHistory>30</maxHistory>
+		</rollingPolicy>
+
+		<encoder>
+			<pattern> ${defaultPattern} </pattern>
+		</encoder>
+	</appender>
+
+	<root level="TRACE">
+		<appender-ref ref="TIME_BASED_LOG" />
+		<appender-ref ref="STDOUT" />
+	</root>
+</configuration>
