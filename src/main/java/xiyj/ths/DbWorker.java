@@ -2,6 +2,7 @@ package xiyj.ths;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -10,16 +11,19 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DbWorker {
+public class DbWorker implements AutoCloseable {
 	static public Logger log = LoggerFactory.getLogger(DbWorker.class);
 
-	public String _jdbcUrl = null;
-	public String _jdbcUser = null;
-	public String _jdbcPassword = null;
+	// public String _jdbcUrl = "jdbc:mysql://127.0.0.1:3306/ths?trustServerCertificate=true&verifyServerCertificate=false&useSSL=true&requireSSL=true";
+	public String _jdbcUrl = "jdbc:mysql://127.0.0.1:3306/ths";
+	public String _jdbcUser = "ths";
+	public String _jdbcPassword = "ths";
 
 	public Connection _conn = null;
 
+	@Override
 	public void close() {
+		log.info("Entering...");
 		if (_conn != null)
 			try {
 				_conn.close();
@@ -37,8 +41,7 @@ public class DbWorker {
 	public static DbWorker create() throws SQLException {
 		DbWorker db = new DbWorker();
 		// db._jdbcUrl = .db._conn.close();.0wi
-		// db.connect();
-
+		db.connect();
 		return db;
 	}
 
@@ -65,8 +68,18 @@ public class DbWorker {
 		return mins;
 	}
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws THSException {
 		// TODO Auto-generated method stub
+		try (DbWorker db = DbWorker.create()) {
+			PreparedStatement st = db._conn.prepareStatement("insert into t01 values (?, ?)");
+			st.setString(1, "2018-10-10 11:22:33.444");
+			st.setString(2,  "Hello, world");
+			int ret = st.executeUpdate();
+			log.info("insert return : " + ret);
+			db._conn.commit();
+		} catch (SQLException e) {
+			throw new THSException("JDBC", e);
+		}
 
 	}
 
